@@ -2,6 +2,7 @@ from os.path import dirname, join
 from os import scandir
 import numpy as np
 import pydicom
+import vtk #TODO replace by numpy
 
 def sqdist(dataset):
     vector = dataset.ImagePositionPatient
@@ -45,9 +46,16 @@ class DicomReader:
         self.imageInformation["imageSpacing"] = spacing
         self.imageInformation["imageOrigin"] = exDataset.ImagePositionPatient
 
-        print(ds.SOPInstanceUID)
-        print(ds.ImagePositionPatient)
-        print(ds.ImageOrientationPatient)
+        if len(self.imagearray) > 1:
+            exDataset2 = self.imagearray[1]
+            origin2 = exDataset2.ImagePositionPatient
+            imageVector = [0,0,0]
+            for i in range(3):
+                imageVector[i] = exDataset2.ImagePositionPatient[i]-exDataset.ImagePositionPatient[i]
+
+            spacing[2] = vtk.vtkMath.Normalize(imageVector)
+            self.imageInformation["imageNormal"] = imageVector
+            self.imageInformation["imageSpacing"] = spacing
 
         # Load dimensions based on the number of rows, columns, and slices (along the Z axis)
         ConstPixelDims = (len(self.imagearray), rows, cols)

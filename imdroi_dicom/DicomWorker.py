@@ -2,6 +2,7 @@ import argparse
 from DicomReader import DicomReader
 from DicomVtkInterface import VtkImageHelper
 import os
+import vtk
 
 class DicomWorker:
 
@@ -28,4 +29,8 @@ if __name__ == "__main__":
 
     imageVtk = VtkImageHelper()
     print(dw.getImageInformation())
-    imageVtk.createVtkMarchingCube(dw.getArrayDicom(), dw.getImageInformation())
+    test = imageVtk.createVtkMarchingCube(dw.getArrayDicom(), dw.getImageInformation())
+    writer = vtk.vtkXMLPolyDataWriter()
+    writer.SetFileName("/home/christoph/test.vtp")
+    writer.SetInputData(test)
+    writer.Write()

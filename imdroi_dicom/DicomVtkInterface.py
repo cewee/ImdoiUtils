@@ -163,13 +163,13 @@ class VtkImageHelper:
         #dataImporter.SetDataExtent([0,9,0,9,0,9])
         #dataImporter.SetWholeExtent(imageInformation["imageExtent"])
         dataImporter.SetDataSpacing(imageInformation["imageSpacing"])
-        dataImporter.SetDataOrigin(imageInformation["imageOrigin"])
+        #dataImporter.SetDataOrigin(imageInformation["imageOrigin"])
 
-        #writer = vtk.vtkXMLImageDataWriter()
-        #writer.SetFileName("/home/christoph/test.vti")
-        #writer.SetInputConnection(dataImporter.GetOutputPort())
+        # writer = vtk.vtkXMLImageDataWriter()
+        # writer.SetFileName("/home/christoph/test.vti")
+        # writer.SetInputConnection(dataImporter.GetOutputPort())
         #writer.SetDataModeToAscii()
-        #writer.Write()
+        # writer.Write()
 
         # An isosurface, or contour value of 500 is known to correspond to the
         # skin of the patient.
@@ -180,37 +180,38 @@ class VtkImageHelper:
         skinExtractor.ComputeNormalsOff()
         skinExtractor.SetValue(0, 1)
 
-        # smoothingIterations = 2
-        # passBand = 0.01
-        # featureAngle = 60.0
-        # smoother = vtk.vtkWindowedSincPolyDataFilter()
-        # smoother.SetInputConnection(skinExtractor.GetOutputPort())
-        # smoother.SetNumberOfIterations(smoothingIterations)
-        # smoother.BoundarySmoothingOff()
-        # smoother.FeatureEdgeSmoothingOff()
-        # smoother.SetFeatureAngle(featureAngle)
-        # smoother.SetPassBand(passBand)
-        # smoother.NonManifoldSmoothingOn()
-        # smoother.NormalizeCoordinatesOn()
-        # smoother.Update()
-        #
-        # normals = vtk.vtkPolyDataNormals()
-        # normals.SetInputConnection(smoother.GetOutputPort())
-        # normals.SetFeatureAngle(featureAngle)
-        #
-        # stripper = vtk.vtkStripper()
-        # stripper.SetInputConnection(normals.GetOutputPort())
+        smoothingIterations = 15
+        passBand = 0.01
+        featureAngle = 60.0
+        smoother = vtk.vtkWindowedSincPolyDataFilter()
+        smoother.SetInputConnection(skinExtractor.GetOutputPort())
+        smoother.SetNumberOfIterations(smoothingIterations)
+        smoother.BoundarySmoothingOff()
+        smoother.FeatureEdgeSmoothingOff()
+        smoother.SetFeatureAngle(featureAngle)
+        smoother.SetPassBand(passBand)
+        smoother.NonManifoldSmoothingOn()
+        smoother.NormalizeCoordinatesOn()
+        smoother.Update()
+
+        normals = vtk.vtkPolyDataNormals()
+        normals.SetInputConnection(smoother.GetOutputPort())
+        normals.SetFeatureAngle(featureAngle)
+
+        stripper = vtk.vtkStripper()
+        stripper.SetInputConnection(normals.GetOutputPort())
 
         iOr = imageInformation["imageOrientation"]
         xdir = [float(iOr[0]), float(iOr[1]), float(iOr[2])]
         ydir = [float(iOr[3]), float(iOr[4]), float(iOr[5])]
-        normal = [0.0,0.0,0.0]
-        vtk.vtkMath.Cross(xdir,ydir,normal)
+        normal = imageInformation["imageNormal"]
+        #vtk.vtkMath.Cross(xdir,ydir,normal)
+        origin = imageInformation["imageOrigin"]
 
         matrix = [
-        xdir[0] , ydir[0] , normal[0] , 0 ,
-        xdir[1] , ydir[1] , normal[1] , 0 ,
-        xdir[2] , ydir[2] , normal[2] , 0 ,
+        xdir[0] , ydir[0] , normal[0] , origin[0] ,
+        xdir[1] , ydir[1] , normal[1] , origin[1] ,
+        xdir[2] , ydir[2] , normal[2] , origin[2] ,
         0       , 0       , 0         , 1
         ]
 
@@ -218,13 +219,8 @@ class VtkImageHelper:
         transform.SetMatrix(matrix)
 
         transformFilter = vtk.vtkTransformFilter()
-        transformFilter.SetInputConnection(skinExtractor.GetOutputPort())
+        transformFilter.SetInputConnection(normals.GetOutputPort())
         transformFilter.SetTransform(transform)
         transformFilter.Update()
 
         return transformFilter.GetOutput()
-        #contourfilter
-        #writer = vtk.vtkXMLPolyDataWriter()
-        #writer.SetFileName("/home/christoph/test.vtp")
-        #writer.SetInputConnection(transformFilter.GetOutputPort())
-        #writer.Write()
