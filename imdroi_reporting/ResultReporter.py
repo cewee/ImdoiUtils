@@ -16,9 +16,12 @@ class OutputElement(object):
         self.element["representation"]["brhc"] = [x2,y2]
         self.element["representation"]["slices"] = slices
         self.element["representation"]["color"] = color
-
     def setAttachment(self,filePath, fileType):
         self.element["type"] = "attachment"
+        self.element["subtype"]= fileType
+        self.element["representation"]["file_path"] = filePath
+    def setSegmentation(self,filePath, fileType):
+        self.element["type"] = "segmentation"
         self.element["subtype"]= fileType
         self.element["representation"]["file_path"] = filePath
     def setDiagnosisText(self, text):

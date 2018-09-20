@@ -1,9 +1,7 @@
 from os.path import dirname, join
 from os import scandir
-from pprint import pprint
 import numpy as np
 import pydicom
-from matplotlib import pyplot
 
 def sqdist(dataset):
     vector = dataset.ImagePositionPatient
