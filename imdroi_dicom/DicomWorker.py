@@ -1,13 +1,12 @@
 import argparse
 from DicomReader import DicomReader
-import vtk
+from DicomVtkInterface import VtkImageHelper
 import os
 
 class DicomWorker:
 
     def __init__(self, path):
         DicomReader(path).read()
-
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(
@@ -25,4 +24,8 @@ if __name__ == "__main__":
 
     #args = ap.parse_args(sys.argv[1:])
 
-    DicomWorker("/data/image/tcia/110/")
+    dw = DicomReader("/data/image/tcia/110/")
+
+    imageVtk = VtkImageHelper()
+    print(dw.getImageInformation())
+    imageVtk.createVtkMarchingCube(dw.getArrayDicom(), dw.getImageInformation())
