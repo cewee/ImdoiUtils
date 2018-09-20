@@ -220,6 +220,7 @@ class VtkImageHelper:
         transformFilter = vtk.vtkTransformFilter()
         transformFilter.SetInputConnection(skinExtractor.GetOutputPort())
         transformFilter.SetTransform(transform)
+        transformFilter.Update()
 
         return transformFilter.GetOutput()
         #contourfilter
