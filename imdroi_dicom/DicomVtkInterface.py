@@ -177,29 +177,29 @@ class VtkImageHelper:
         skinExtractor.SetInputConnection(dataImporter.GetOutputPort())
         skinExtractor.ComputeScalarsOff()
         skinExtractor.ComputeGradientsOff()
-        skinExtractor.ComputeNormalsOff()
+        #skinExtractor.ComputeNormalsOff()
         skinExtractor.SetValue(0, 1)
 
-        smoothingIterations = 15
-        passBand = 0.01
-        featureAngle = 60.0
-        smoother = vtk.vtkWindowedSincPolyDataFilter()
-        smoother.SetInputConnection(skinExtractor.GetOutputPort())
-        smoother.SetNumberOfIterations(smoothingIterations)
-        smoother.BoundarySmoothingOff()
-        smoother.FeatureEdgeSmoothingOff()
-        smoother.SetFeatureAngle(featureAngle)
-        smoother.SetPassBand(passBand)
-        smoother.NonManifoldSmoothingOn()
-        smoother.NormalizeCoordinatesOn()
-        smoother.Update()
-
-        normals = vtk.vtkPolyDataNormals()
-        normals.SetInputConnection(smoother.GetOutputPort())
-        normals.SetFeatureAngle(featureAngle)
-
-        stripper = vtk.vtkStripper()
-        stripper.SetInputConnection(normals.GetOutputPort())
+        # smoothingIterations = 15
+        # passBand = 0.01
+        # featureAngle = 60.0
+        # smoother = vtk.vtkWindowedSincPolyDataFilter()
+        # smoother.SetInputConnection(skinExtractor.GetOutputPort())
+        # smoother.SetNumberOfIterations(smoothingIterations)
+        # smoother.BoundarySmoothingOff()
+        # smoother.FeatureEdgeSmoothingOff()
+        # smoother.SetFeatureAngle(featureAngle)
+        # smoother.SetPassBand(passBand)
+        # smoother.NonManifoldSmoothingOn()
+        # smoother.NormalizeCoordinatesOn()
+        # smoother.Update()
+        #
+        # normals = vtk.vtkPolyDataNormals()
+        # normals.SetInputConnection(smoother.GetOutputPort())
+        # normals.SetFeatureAngle(featureAngle)
+        #
+        # stripper = vtk.vtkStripper()
+        # stripper.SetInputConnection(normals.GetOutputPort())
 
         iOr = imageInformation["imageOrientation"]
         xdir = [float(iOr[0]), float(iOr[1]), float(iOr[2])]
@@ -219,7 +219,7 @@ class VtkImageHelper:
         transform.SetMatrix(matrix)
 
         transformFilter = vtk.vtkTransformFilter()
-        transformFilter.SetInputConnection(normals.GetOutputPort())
+        transformFilter.SetInputConnection(skinExtractor.GetOutputPort())
         transformFilter.SetTransform(transform)
         transformFilter.Update()
 
