@@ -143,10 +143,6 @@ def dtypeToVtkType(d_type):
         return vtk.VTK_INT
 
 class VtkImageHelper:
-
-    def __init__(self):
-        print("imageHelper")
-
     def createVtkMarchingCube(self, DicomArray, imageInformation):
 
 

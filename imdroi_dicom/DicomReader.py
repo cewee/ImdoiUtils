@@ -24,9 +24,6 @@ class DicomReader:
 
     def read(self):
         # fetch the path to the test data
-        print('Path to the DICOM directory: {}'.format(self.filepath))
-        # load the data
-
         base_dir = dirname(self.filepath)
         for entry in scandir(base_dir):
             if entry.is_file():
