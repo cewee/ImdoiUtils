@@ -145,7 +145,6 @@ def dtypeToVtkType(d_type):
 class VtkImageHelper:
     def createVtkMarchingCube(self, DicomArray, imageInformation):
 
-
         dataImporter = vtkImageImportFromArray()
         dataImporter.SetArray(DicomArray)
 
